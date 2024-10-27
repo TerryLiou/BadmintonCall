@@ -7,13 +7,13 @@
 
 import Foundation
 
-struct GameModel {
-    init(gameDuration: TimeInterval, courtCount: Int) {
-        self.gameDuration = gameDuration
+struct GameModel: Identifiable, Hashable {
+    init(courtCount: Int) {
         self.courtCount = courtCount
     }
     
-    var gameDuration: TimeInterval
+    let id = UUID()
+    var gameDuration: TimeInterval = Date().timeIntervalSinceNow
     var courtCount: Int
     
     var startTime: Date = Date()
