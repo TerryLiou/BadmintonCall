@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7B1F567B2CD5486D0053668F /* MijickPopups in Frameworks */ = {isa = PBXBuildFile; productRef = 7B1F567A2CD5486D0053668F /* MijickPopups */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		7B1F56492CAC02610053668F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B1F567B2CD5486D0053668F /* MijickPopups in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = BadmintonCall_SwiftUI;
 			packageProductDependencies = (
+				7B1F567A2CD5486D0053668F /* MijickPopups */,
 			);
 			productName = BadmintonCall_SwiftUI;
 			productReference = 7B1F56332CAC025E0053668F /* BadmintonCall_SwiftUI.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 7B1F562A2CAC025E0053668F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7B1F56792CD5486D0053668F /* XCRemoteSwiftPackageReference "PopupView" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7B1F56342CAC025E0053668F /* Products */;
 			projectDirPath = "";
@@ -558,6 +567,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7B1F56792CD5486D0053668F /* XCRemoteSwiftPackageReference "PopupView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Mijick/PopupView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7B1F567A2CD5486D0053668F /* MijickPopups */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7B1F56792CD5486D0053668F /* XCRemoteSwiftPackageReference "PopupView" */;
+			productName = MijickPopups;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7B1F562B2CAC025E0053668F /* Project object */;
 }

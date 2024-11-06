@@ -10,15 +10,13 @@ import CoreData
 import UniformTypeIdentifiers
 
 struct ContentView: View {
-    @State private var showAlert = false
+    @State private var showAlert: Bool = false
     @State private var selectedPeople: [Player] = []
-    @State private var allItems: [Player] = Player.demoArray
-    
     @State private var newName: String = ""
     @State private var selectedOption: Gender = .male
     @State private var levelOption: Level = .middle
     
-    
+    @EnvironmentObject private var todayPlayer: PlayerViewModel
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
@@ -41,146 +39,150 @@ struct ContentView: View {
     ]
     
     var body: some View {
-        HStack {
-            // 左側固定寬度的 View
-            VStack(spacing: 20) {
-                LazyVGrid(columns: columns) {
-                    ForEach(Array(courtCount.enumerated()), id: \.element) { index, item in
-                        Button(action: {
-                            if selectedPeople.count == 4 {
-                                courts[index].player = selectedPeople
-                                selectedPeople.removeAll()
-                            } else {
-                                
-                            }
-                        }) {
-                            Text(item)
-                                .padding()
-                                .background(Color.gray.opacity(0.3))
-                                .cornerRadius(8)
-                        }
-                        .disabled(!courts[index].player.isEmpty)
-                    }
-                }
-                .frame(width: 300, height: 140)
-                
-                // 顯示已選擇的物品
-                VStack {
-                    Text("Selected Players")
-                        .font(.headline)
-                        .padding(.bottom, 5)
+            ZStack {
+                HStack {
+                    // 左側固定寬度的 View
                     
-                    LazyVGrid(columns: columns) {
-                        ForEach(selectedPeople) { item in
-                            Text(item.name)
-                                .padding()
-                                .background(Color.gray.opacity(0.3))
-                                .cornerRadius(8)
-                        }
-                    }
-                    .frame(width: 300, height: 140)
-                    .border(Color.gray)
-                    .cornerRadius(8)
-                    
-                    HStack {
-                        Button(action: {}) {
-                            Text("男雙")
-                        }
-                        
-                        Button(action: {}) {
-                            Text("女雙")
-                        }
-                        
-                        Button(action: {}) {
-                            Text("混雙")
-                        }
-                    }
-                    
-                    Button(action: {
-                        showAlert = true
-                    }) {
-                        Text("新增球友")
-                    }
-                    .frame(width: 120, height: 40)
-                    .background(Color.cyan)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                    .overlay {
-                        Group {
-                            if showAlert {
-                                Color.black.opacity(0.4) // 半透明背景
-                                    .edgesIgnoringSafeArea(.all)
-                                alertView()
-                                    .background(Color.white) // 白色背景
-                                    .cornerRadius(12)
-                                    .shadow(radius: 20)
-                                    .padding()
+                    VStack(spacing: 20) {
+                        LazyVGrid(columns: columns) {
+                            ForEach(Array(courtCount.enumerated()), id: \.element) { index, item in
+                                Button(action: {
+                                    if selectedPeople.count == 4 {
+                                        courts[index].player = selectedPeople
+                                        selectedPeople.removeAll()
+                                    } else {
+                                        
+                                    }
+                                }) {
+                                    Text(item)
+                                        .padding()
+                                        .background(Color.gray.opacity(0.3))
+                                        .cornerRadius(8)
+                                }
+                                .disabled(!courts[index].player.isEmpty)
                             }
                         }
-                    }
-                }
-                
-                Divider()
-                
-                GridView(items: allItems, onItemTapped: { item in
-                    if selectedPeople.count < 4 {
-                        selectedPeople.append(item)
-                        allItems.removeAll(where: { $0.id == item.id })
-                    }
-                }, onItemLongPress: { item in
-                        allItems.removeAll(where: { $0.id == item.id })
-                })
-            }
-            .frame(maxWidth: 300, maxHeight: .infinity, alignment: .top)
-            
-            Divider()
-            
-            ScrollView {
-                ForEach(courtCount.indices, id: \.self) { itemIndex in
-                    // 使用圖片作為背景
-                    ZStack {
-                        Image("badmintonCourt") // 替換為背景圖名稱
-                            .resizable()
-                            .frame(width: 536, height: 244) // 設定固定大小
-                            .cornerRadius(8)
-                        Text(courtCount[itemIndex])
-                            .foregroundColor(.white)
-                            .bold()
+                        .frame(width: 300, height: 140)
                         
-                        if !courts[itemIndex].player.isEmpty {
-                            LazyVGrid(columns: columns, spacing: 40) {
-                                ForEach(courts[itemIndex].player, id: \.self) { player in
-                                    Text(player.name)
-                                        .font(.largeTitle)
+                        // 顯示已選擇的物品
+                        VStack {
+                            Text("Selected Players")
+                                .font(.headline)
+                                .padding(.bottom, 5)
+                            
+                            LazyVGrid(columns: columns) {
+                                ForEach(selectedPeople) { item in
+                                    Text(item.name)
                                         .padding()
                                         .background(Color.gray.opacity(0.3))
                                         .cornerRadius(8)
                                 }
                             }
-                            .frame(width: 400, height: 200)
+                            .frame(width: 300, height: 140)
+                            .border(Color.gray)
                             .cornerRadius(8)
+                            
+                            HStack {
+                                Button(action: {}) {
+                                    Text("男雙")
+                                }
+                                
+                                Button(action: {}) {
+                                    Text("女雙")
+                                }
+                                
+                                Button(action: {}) {
+                                    Text("混雙")
+                                }
+                            }
+                            
+                            Button(action: {
+                                showAlert = true
+                            }) {
+                                Text("新增球友")
+                            }
+                            .frame(width: 120, height: 40)
+                            .background(Color.cyan)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                            .overlay {
+                                Group {
+                                    if showAlert {
+                                        Color.black.opacity(0.4) // 半透明背景
+                                            .edgesIgnoringSafeArea(.all)
+                                        alertView()
+                                            .background(Color.white) // 白色背景
+                                            .cornerRadius(12)
+                                            .shadow(radius: 20)
+                                            .padding()
+                                    }
+                                }
+                            }
                         }
+                        
+                        Divider()
+                        
+                        GridView(onItemTapped: { item in
+                            if selectedPeople.count < 4 {
+                                selectedPeople.append(item)
+                                todayPlayer.removePlayer(by: item.id)
+                            }
+                        }, onItemLongPress: { item in
+                            print("Long Press")
+                            //                        allItems.removeAll(where: { $0.id == item.id })
+                        })
                     }
+                    .frame(maxWidth: 300, maxHeight: .infinity, alignment: .top)
                     
-                    Button(action: {
-                        if !courts[itemIndex].player.isEmpty {
-                            allItems += courts[itemIndex].player
-                            courts[itemIndex].player.removeAll()
+                    Divider()
+                    
+                    ScrollView {
+                        ForEach(courtCount.indices, id: \.self) { itemIndex in
+                            // 使用圖片作為背景
+                            ZStack {
+                                Image("badmintonCourt") // 替換為背景圖名稱
+                                    .resizable()
+                                    .frame(width: 536, height: 244) // 設定固定大小
+                                    .cornerRadius(8)
+                                Text(courtCount[itemIndex])
+                                    .foregroundColor(.white)
+                                    .bold()
+                                
+                                if !courts[itemIndex].player.isEmpty {
+                                    LazyVGrid(columns: columns, spacing: 40) {
+                                        ForEach(courts[itemIndex].player, id: \.self) { player in
+                                            Text(player.name)
+                                                .font(.largeTitle)
+                                                .padding()
+                                                .background(Color.gray.opacity(0.3))
+                                                .cornerRadius(8)
+                                        }
+                                    }
+                                    .frame(width: 400, height: 200)
+                                    .cornerRadius(8)
+                                }
+                            }
+                            
+                            Button(action: {
+                                if !courts[itemIndex].player.isEmpty {
+                                    todayPlayer.players += courts[itemIndex].player
+                                    courts[itemIndex].player.removeAll()
+                                }
+                            }) {
+                                Text("下場")
+                            }
+                            .frame(width: 64, height: 30)
+                            .background(.cyan)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0))
                         }
-                    }) {
-                        Text("下場")
+                        .padding(EdgeInsets(top: 10, leading: 30, bottom: 20, trailing: 10))
                     }
-                    .frame(width: 64, height: 30)
-                    .background(.cyan)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0))
                 }
-                .padding(EdgeInsets(top: 10, leading: 30, bottom: 20, trailing: 10))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
             }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
     }
     
     private func alertView() -> some View {
@@ -206,7 +208,7 @@ struct ContentView: View {
                 Button("OK") {
                     // 在這裡您可以處理用戶的輸入，例如將其送交伺服器
 //                    print("Name: \(name), Selected Option: \(selectedOption)")
-                    allItems.append(Player(name: newName, gender: .male, level: .middle))
+//                    allItems.append(Player(name: newName, gender: .male, level: .middle))
                     showAlert = false // 關閉警告
                 }
                 .padding()
@@ -253,34 +255,22 @@ struct ContentView: View {
     }
 }
 
-struct GridView: View {
-    let items: [Player]
-    let onItemTapped: (Player) -> Void
-    let onItemLongPress: (Player) -> Void
-    
-    let columns = [
-        GridItem(.flexible(minimum: 100, maximum: 200), spacing: 10),
-        GridItem(.flexible(minimum: 100, maximum: 200), spacing: 10)
-    ]
+struct PopupView: View {
+    @Binding var isPresented: Bool
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns) {
-                ForEach(items) { item in
-                    Text(item.name)
-                        .padding()
-                        .background(Color.cyan)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .onTapGesture {
-                            onItemTapped(item)
-                        }
-                        .onLongPressGesture(minimumDuration: 2.0) {
-                            onItemLongPress(item)
-                        }
-                }
+        VStack {
+            Text("This is a Popup!")
+            Button(action: {
+                isPresented = false
+            }) {
+                Text("Dismiss")
             }
         }
+        .frame(width: 200, height: 200)
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(radius: 10)
     }
 }
 
@@ -302,23 +292,9 @@ struct ExternalDropDelegate: DropDelegate {
     }
 }
 
-struct DetailView: View {
-    var item: String
-    
-    var body: some View {
-        Text("Details for \(item)")
-            .font(.largeTitle)
-            .padding()
-    }
-}
-
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
 #Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    ContentView()
+        .environment(\.managedObjectContext,
+                      PersistenceController.preview.container.viewContext)
+        .environmentObject(PlayerViewModel(isDemo: true))
 }
