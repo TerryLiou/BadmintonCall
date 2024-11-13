@@ -8,6 +8,47 @@
 import SwiftUI
 import SwiftUICore
 
+enum PartnerBtnState {
+    case normal
+    case selected
+    
+    var text: String {
+        switch self {
+        case .normal:
+            return "不綁定"
+        case .selected:
+            return "隊友"
+        }
+    }
+    
+    var textColor: Color {
+        switch self {
+        case .normal:
+            return .gray
+        case .selected:
+            return .primary
+        }
+    }
+    
+    var backgroundColor: Color {
+        switch self {
+        case .normal:
+            return Color(uiColor: UIColor())
+        case .selected:
+            return .green
+        }
+    }
+    
+    var disable: Bool {
+        switch self {
+        case .normal:
+            return true
+        case .selected:
+            return false
+        }
+    }
+}
+
 struct GridView: View {
     @EnvironmentObject var dataModel: PlayerViewModel
     
@@ -37,6 +78,7 @@ struct GridView: View {
 struct GridCell: View {
     @EnvironmentObject var dataModel: PlayerViewModel
     @State private var showPopover: Bool = false
+    @State private var partnerState: PartnerBtnState = .normal
     
     let playerInfo: Player
     let onItemTapped: (Player) -> Void
@@ -93,10 +135,25 @@ struct GridCell: View {
             .popover(isPresented: $showPopover) {
                 VStack {
                     HStack {
+                        Button {
+                            switch partnerState {
+                            case .normal:
+                                partnerState = .selected
+                            case .selected:
+                                partnerState = .normal
+                            }
+                        } label: {
+                            Text(partnerState.text)
+                                .foregroundColor(partnerState.textColor)
+                                .background(partnerState.backgroundColor)
+                                .cornerRadius(8.0)
+                        }
+
                         Text("Partner")
                             .padding()
                             .font(.subheadline)
                             .foregroundColor(.black)
+                        
                         Menu {
                             ForEach(dataModel.players) { player in
                                 Button {
@@ -112,14 +169,16 @@ struct GridCell: View {
                     Text("Popup View")
                         .padding()
                         .background(Color.yellow)
-                        .cornerRadius(10)
-                        .frame(width: 300, height: 200)
+//                        .cornerRadius(10)
+//                        .frame(width: 300, height: 200)
                 }
                 .onTapGesture {
                     withAnimation {
                         self.showPopover = false
                     }
                 }
+                .cornerRadius(10)
+                .frame(width: 300, height: 200)
             }
         }
     }
