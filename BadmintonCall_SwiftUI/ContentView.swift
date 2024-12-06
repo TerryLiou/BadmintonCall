@@ -30,8 +30,6 @@ struct ContentView: View {
                                        GameModel( courtCount: 4),
                                        GameModel( courtCount: 4)]
     
-    let collectionCells = Array(1...50).map { "Item \($0)" }
-    
     // GridItem 定义每个单元格的布局
     let columns = [
         GridItem(.flexible()),
@@ -39,6 +37,7 @@ struct ContentView: View {
     ]
     
     var body: some View {
+        GeometryReader { geometry in
             ZStack {
                 HStack {
                     // 左側固定寬度的 View
@@ -62,7 +61,7 @@ struct ContentView: View {
                                 .disabled(!courts[index].player.isEmpty)
                             }
                         }
-                        .frame(width: 300, height: 140)
+                        .frame(width: 240, height: 140)
                         
                         // 顯示已選擇的物品
                         VStack {
@@ -78,7 +77,7 @@ struct ContentView: View {
                                         .cornerRadius(8)
                                 }
                             }
-                            .frame(width: 300, height: 140)
+                            .frame(width: 240, height: 140)
                             .border(Color.gray)
                             .cornerRadius(8)
                             
@@ -132,7 +131,7 @@ struct ContentView: View {
                             //                        allItems.removeAll(where: { $0.id == item.id })
                         })
                     }
-                    .frame(maxWidth: 300, maxHeight: .infinity, alignment: .top)
+                    .frame(maxWidth: todayPlayer.playerCollectionViewWidth, maxHeight: .infinity, alignment: .top)
                     
                     Divider()
                     
@@ -183,6 +182,8 @@ struct ContentView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
             }
+            .padding()
+        }
     }
     
     private func alertView() -> some View {

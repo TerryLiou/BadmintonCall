@@ -33,7 +33,7 @@ enum PartnerBtnState {
     var backgroundColor: Color {
         switch self {
         case .normal:
-            return Color(uiColor: UIColor())
+            return Color(uiColor: UIColor(red: 197/255, green: 197/255, blue: 197/255, alpha: 0.6))
         case .selected:
             return .green
         }
@@ -86,42 +86,7 @@ struct GridCell: View {
     
     var body: some View {
         ZStack {
-            VStack {
-                Text(playerInfo.name)
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                
-                Divider()
-                    .background(.gray.opacity(0.1))
-                
-                HStack {
-                    Text(playerInfo.level.nameTag)
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .padding(EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4))
-                        .cornerRadius(3)
-                        .background(Color.black.opacity(0.1))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 3, style: .circular)
-                                .stroke(Color.white, lineWidth: 0.5)
-                        }
-                    Text("上場次數： \(playerInfo.playTimes)" )
-                        .font(.caption)
-                        .fontWeight(.thin)
-                        .frame(maxWidth: .infinity, alignment: .bottomTrailing)
-                }
-                .padding(EdgeInsets(top: 4, leading: 0, bottom: 0, trailing: 0))
-            }
-            .padding()
-            .foregroundColor(.white)
-            .background(playerInfo.level.color)
-            .cornerRadius(8)
-            .onTapGesture {
-                onItemTapped(playerInfo)
-            }
-            .onLongPressGesture(minimumDuration: 2.0) {
-                onItemLongPress(playerInfo)
-            }
+            playerInfoContent
             
             Button{
                 showPopover = true
@@ -133,52 +98,7 @@ struct GridCell: View {
             .frame(width: 16, height: 16)
             .position(CGPoint(x: 12, y: 12))
             .popover(isPresented: $showPopover) {
-                VStack {
-                    HStack {
-                        Button {
-                            switch partnerState {
-                            case .normal:
-                                partnerState = .selected
-                            case .selected:
-                                partnerState = .normal
-                            }
-                        } label: {
-                            Text(partnerState.text)
-                                .foregroundColor(partnerState.textColor)
-                                .background(partnerState.backgroundColor)
-                                .cornerRadius(8.0)
-                        }
-
-                        Text("Partner")
-                            .padding()
-                            .font(.subheadline)
-                            .foregroundColor(.black)
-                        
-                        Menu {
-                            ForEach(dataModel.players) { player in
-                                Button {
-                                    dataModel.setupPartner(for: playerInfo, by: player.id.uuidString)
-                                } label: {
-                                    Text(player.name)
-                                }
-                            }
-                        } label: {
-                            Text("球友名單")
-                        }
-                    }
-                    Text("Popup View")
-                        .padding()
-                        .background(Color.yellow)
-//                        .cornerRadius(10)
-//                        .frame(width: 300, height: 200)
-                }
-                .onTapGesture {
-                    withAnimation {
-                        self.showPopover = false
-                    }
-                }
-                .cornerRadius(10)
-                .frame(width: 300, height: 200)
+                playerStateView
             }
         }
     }
@@ -226,14 +146,24 @@ struct GridCell: View {
         VStack {
             HStack {
                 Button {
-                    
+                    switch partnerState {
+                    case .normal:
+                        partnerState = .selected
+                    case .selected:
+                        partnerState = .normal
+                    }
                 } label: {
-                    Text("隊友")
-                        .padding()
-                        .font(.subheadline)
-                        .foregroundColor(.black)
+                    Text(partnerState.text)
+                        .foregroundColor(partnerState.textColor)
+                        .background(partnerState.backgroundColor)
+                        .cornerRadius(8.0)
                 }
 
+                Text(partnerState.text)
+                    .padding()
+                    .font(.subheadline)
+                    .foregroundColor(.black)
+                
                 Menu {
                     ForEach(dataModel.players) { player in
                         Button {
@@ -241,22 +171,20 @@ struct GridCell: View {
                         } label: {
                             Text(player.name)
                         }
+                        .disabled(partnerState.disable)
                     }
                 } label: {
                     Text("球友名單")
                 }
             }
-            Text("Popup View")
-                .padding()
-                .background(Color.yellow)
-                .cornerRadius(10)
-                .frame(width: 300, height: 200)
         }
         .onTapGesture {
-            withAnimation {
+//            withAnimation {
                 self.showPopover = false
-            }
+//            }
         }
+        .cornerRadius(10)
+        .frame(width: 300, height: 200)
     }
 }
 
